@@ -185,28 +185,35 @@ export PATH="/usr/local/sbin:$PATH"
 EOF
 fi
 
+# Instalar a versão LTS do Node.js
+echo "Instalando Node.js LTS (Hydrogen)..."
+nvm install lts/hydrogen
+
 # Configurar Thema do Terminal
 # 1. Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
 echo "" > ~/.p10k.zsh
 curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
 
-# 2. Baixa o arquivo do tema Dracula para Terminal.app
-curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/Dracula.terminal
+if [ ! -f "$HOME/Dracula.terminal" ]; then
+  echo "Baixando o tema Dracula..."
+  curl -L -o "$HOME/Dracula.terminal" https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/Dracula.terminal
+fi
 
-# 3. Importa o tema Dracula do caminho fornecido
+# Importa o tema Dracula e o define como padrão usando AppleScript
 osascript <<EOF
 tell application "Terminal"
+    -- Importa o tema
     do shell script "open $HOME/Dracula.terminal"
     delay 1
+    -- Define como o tema padrão para novas janelas e inicialização
     set default settings to settings set "Dracula"
+    set startup settings to settings set "Dracula"
 end tell
 EOF
 
 echo "Configurações aplicadas. O tema Dracula e a fonte MesloLGS NF foram ativados."
 
-# Instalar a versão LTS do Node.js
-echo "Instalando Node.js LTS (Hydrogen)..."
-nvm install lts/hydrogen
+rm -rf "$HOME/Dracula.terminal"
 
 # Finalização
 echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
