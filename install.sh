@@ -125,9 +125,7 @@ alias runtest='sail artisan test'
 alias upd='brew update && brew upgrade'
 ALIAS
 
-# Instalar plugins
-git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # Caminho padrão do zsh-autosuggestions
 ZSH_AUTOSUGGESTIONS="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
@@ -179,16 +177,20 @@ fi
 
 # Carregar ~/.zshrc
 echo "Carregando ~/.zshrc..."
+
+if [ "$SHELL" != "$(which zsh)" ]; then
+  exec zsh -l
+fi
+
 source ~/.zshrc
 
 # Instalar a versão LTS do Node.js
 echo "Instalando Node.js LTS (Hydrogen)..."
 nvm install lts/hydrogen
 
-exec zsh -l
-
 # Configurar Thema do Terminal
 # 1. Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
+echo "" > ~/.p10k.zsh
 curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
 
 # 2. Baixa o arquivo do tema Dracula para Terminal.app
@@ -202,12 +204,6 @@ tell application "Terminal"
     set default settings to settings set "Dracula"
 end tell
 EOF
-
-# Limpando p10k
-echo "" > ~/.p10k.zsh
-
-# Configurando
-curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
 
 # Configura a fonte para todos os perfis do Terminal.app
 # Itera sobre os perfis configurados no Terminal
@@ -223,10 +219,13 @@ done
 defaults write com.apple.terminal "Default Window Settings" -string "Dracula"
 defaults write com.apple.terminal "Startup Window Settings" -string "Dracula"
 
-# Reinicia o Terminal para aplicar as mudanças (opcional)
-killall Terminal
-
 echo "Configurações aplicadas. O tema Dracula e a fonte MesloLGS NF foram ativados."
 
 # Finalização
 echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
+
+if [ "$SHELL" != "$(which zsh)" ]; then
+  exec zsh -l
+fi
+
+source ~/.zshrc
