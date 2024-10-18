@@ -27,3 +27,8 @@ git clone git@github.com:c3t4r4/Personal-MacOS-Modifications.git && cd Personal-
 ```shell
 chmod +x install.sh && ./install.sh
 ```
+
+### Passo único:
+```shell
+git clone git@github.com:c3t4r4/Personal-MacOS-Modifications.git && cd Personal-MacOS-Modifications && chmod +x install.sh && ./install.sh
+```
