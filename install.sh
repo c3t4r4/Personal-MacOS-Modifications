@@ -204,13 +204,6 @@ EOF
 
 echo "Configurações aplicadas. O tema Dracula e a fonte MesloLGS NF foram ativados."
 
-
-if [ "$SHELL" != "$(which zsh)" ]; then
-  exec zsh -l
-fi
-
-source ~/.zshrc
-
 # Instalar a versão LTS do Node.js
 echo "Instalando Node.js LTS (Hydrogen)..."
 nvm install lts/hydrogen
