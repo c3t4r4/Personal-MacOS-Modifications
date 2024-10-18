@@ -37,7 +37,7 @@ cask_apps=(
   google-chrome element sublime-text dbeaver-community insomnia anydesk spotify
   angry-ip-scanner teamviewer qbittorrent vlc alt-tab shottr whatsapp
   visual-studio-code docker istat-menus jetbrains-toolbox google-drive onedrive
-  font-fira-code calibre ollama brave-browser
+  font-fira-code calibre ollama brave-browser font-meslo-for-powerlevel10k
 )
 
 # Lista de pacotes a instalar via brew
@@ -65,6 +65,31 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 git clone https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
 
 sed -i '' 's/^ZSH_THEME=".*"/ZSH_THEME="powerlevel10k/powerlevel10k"/' ~/.zshrc
+
+# Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
+curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
+
+Configura a fonte para todos os perfis do Terminal.app
+profiles=$(defaults read com.apple.terminal "Window Settings" | grep -o '"[^"]*"' | tr -d '"')
+
+for profile in $profiles; do
+  # Define a fonte para o perfil atual
+  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontName" -string "MesloLGS NF"
+  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontSize" -int 15
+done
+
+Aplica as configurações para o perfil padrão
+defaults write com.apple.terminal "Default Window Settings" -string "Basic"
+defaults write com.apple.terminal "Startup Window Settings" -string "Basic"
+
+Recarrega as configurações do Terminal usando AppleScript
+osascript <<EOF
+tell application "Terminal"
+    do script "echo 'Terminal profiles updated.'; exec zsh"
+end tell
+EOF
+
+echo "Configurações aplicadas. O Terminal foi recarregado com uma nova janela."
 
 # Carregar ~/.zshrc
 echo "Carregando ~/.zshrc..."
@@ -120,6 +145,6 @@ echo "Instalando Node.js LTS (Hydrogen)..."
 nvm install lts/hydrogen
 
 # Finalização
-echo "Instalação concluída."
+echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
 
 exec zsh -l
