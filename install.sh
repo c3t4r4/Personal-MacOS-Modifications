@@ -31,6 +31,7 @@ fi
 # Atualizar Homebrew
 echo "Atualizando Homebrew..."
 brew update && brew upgrade
+mkdir ~/.nvm
 
 # Lista de aplicativos a instalar via cask
 cask_apps=(
@@ -91,23 +92,27 @@ brew install --cask font-meslo-lg-nerd-font
 git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
-# Instalar tema Dracula
-git clone https://github.com/dracula/zsh.git ~/dracula-zsh
-ln -s ~/dracula-zsh/dracula.zsh-theme ~/.oh-my-zsh/themes/dracula.zsh-theme
-
 # Substituir ZSH_THEME e plugins no .zshrc
 echo "Configurando tema e plugins no .zshrc..."
-sed -i '' 's/^ZSH_THEME=".*"/ZSH_THEME="dracula"/' ~/.zshrc
+sed -i '' 's/^ZSH_THEME=".*"/ZSH_THEME="powerlevel10k/powerlevel10k"/' ~/.zshrc
 sed -i '' 's/^plugins=(.*)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
+
+# Configurar NVM e Laravel
+cat <<EOF >> ~/.zshrc
+# NVM
+export NVM_DIR="$HOME/.nvm"
+    [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" # This loads nvm
+    [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+
+# Laravel
+export PATH="$HOME/.composer/vendor/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
+EOF
 
 # Carregar ~/.zshrc
 echo "Carregando ~/.zshrc..."
 source ~/.zshrc
 
-# Configurar NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d"
 
 # Instalar a versão LTS do Node.js
 echo "Instalando Node.js LTS (Hydrogen)..."
@@ -116,12 +121,20 @@ nvm install lts/hydrogen
 exec zsh -l
 
 # Configurar Thema do Terminal
-
 # 1. Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
 curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
 
 # 2. Baixa o arquivo do tema Dracula para Terminal.app
-curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/dracula/terminal/gh-pages/Dracula.terminal
+curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/dracula/terminal-app/refs/heads/master/Dracula.terminal
+
+# 3. Importa o tema Dracula do caminho fornecido
+osascript <<EOF
+tell application "Terminal"
+    do shell script "open $HOME/terminal-app/Dracula.terminal"
+    delay 1
+    set default settings to settings set "Dracula"
+end tell
+EOF
 
 # Limpando p10k
 echo "" > ~/.p10k.zsh
