@@ -64,37 +64,6 @@ chsh -s $(which zsh)
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
 
-sed -i '' 's/^ZSH_THEME=".*"/ZSH_THEME="powerlevel10k/powerlevel10k"/' ~/.zshrc
-
-# Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
-curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
-
-Configura a fonte para todos os perfis do Terminal.app
-profiles=$(defaults read com.apple.terminal "Window Settings" | grep -o '"[^"]*"' | tr -d '"')
-
-for profile in $profiles; do
-  # Define a fonte para o perfil atual
-  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontName" -string "MesloLGS NF"
-  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontSize" -int 15
-done
-
-Aplica as configurações para o perfil padrão
-defaults write com.apple.terminal "Default Window Settings" -string "Basic"
-defaults write com.apple.terminal "Startup Window Settings" -string "Basic"
-
-Recarrega as configurações do Terminal usando AppleScript
-osascript <<EOF
-tell application "Terminal"
-    do script "echo 'Terminal profiles updated.'; exec zsh"
-end tell
-EOF
-
-echo "Configurações aplicadas. O Terminal foi recarregado com uma nova janela."
-
-# Carregar ~/.zshrc
-echo "Carregando ~/.zshrc..."
-source ~/.zshrc
-
 # Adicionar configurações adicionais ao .zshrc
 cat <<EOF >> ~/.zshrc
 # Fontes Powerlevel10k e configurações
@@ -144,7 +113,40 @@ export NVM_DIR="$HOME/.nvm"
 echo "Instalando Node.js LTS (Hydrogen)..."
 nvm install lts/hydrogen
 
+exec zsh -l
+
+# Configurar Thema do Terminal
+
+# 1. Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
+curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
+
+# 2. Baixa o arquivo do tema Dracula para Terminal.app
+curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/dracula/terminal/gh-pages/Dracula.terminal
+
+# Limpando p10k
+echo "" > ~/.p10k.zsh
+
+# Configurando
+curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
+
+# Configura a fonte para todos os perfis do Terminal.app
+# Itera sobre os perfis configurados no Terminal
+profiles=$(defaults read com.apple.terminal "Window Settings" | grep -o '"[^"]*"' | tr -d '"')
+
+for profile in $profiles; do
+  # Define a fonte para o perfil atual
+  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontName" -string "MesloLGS NF"
+  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontSize" -int 15
+done
+
+# 5. Define Dracula como o tema padrão para janelas e inicialização
+defaults write com.apple.terminal "Default Window Settings" -string "Dracula"
+defaults write com.apple.terminal "Startup Window Settings" -string "Dracula"
+
+# Reinicia o Terminal para aplicar as mudanças (opcional)
+killall Terminal
+
+echo "Configurações aplicadas. O tema Dracula e a fonte MesloLGS NF foram ativados."
+
 # Finalização
 echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
-
-exec zsh -l
