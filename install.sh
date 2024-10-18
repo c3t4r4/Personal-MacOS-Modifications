@@ -62,14 +62,16 @@ chsh -s $(which zsh)
 
 # Instalar Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-brew install romkatv/powerlevel10k/powerlevel10k
+git clone https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
 
-# Instalar plugins
-brew install zsh-autosuggestions zsh-syntax-highlighting
+sed -i '' 's/^ZSH_THEME=".*"/ZSH_THEME="powerlevel10k/powerlevel10k"/' ~/.zshrc
+
+# Carregar ~/.zshrc
+echo "Carregando ~/.zshrc..."
+source ~/.zshrc
 
 # Adicionar configurações adicionais ao .zshrc
 cat <<EOF >> ~/.zshrc
-
 # Fontes Powerlevel10k e configurações
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -90,6 +92,10 @@ ALIAS
 # Instalar fontes necessárias
 brew tap homebrew/cask-fonts
 brew install --cask font-meslo-lg-nerd-font
+
+# Instalar plugins
+git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 
 # Instalar tema Dracula
 git clone https://github.com/dracula/zsh.git ~/dracula-zsh
