@@ -66,13 +66,24 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 git clone https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
 
 # Adicionar configurações adicionais ao .zshrc
+if ! grep -q "# Fontes Powerlevel10k e configurações" ~/.zshrc; then
 cat <<EOF >> ~/.zshrc
+
+# Adicionar configurações adicionais ao .zshrc
 # Fontes Powerlevel10k e configurações
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+EOF
+fi
+
+# Configurar zshrc_aliases
+if ! grep -q "# Carregar aliases" ~/.zshrc; then
+cat <<EOF >> ~/.zshrc
 
 # Carregar aliases
 source ~/.zshrc_aliases
 EOF
+fi
+
 
 # Criar e adicionar aliases no .zshrc_aliases
 cat <<'ALIAS' > ~/.zshrc_aliases
@@ -94,20 +105,29 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/p
 
 # Substituir ZSH_THEME e plugins no .zshrc
 echo "Configurando tema e plugins no .zshrc..."
-sed -i '' 's/^ZSH_THEME=".*"/ZSH_THEME="powerlevel10k/powerlevel10k"/' ~/.zshrc
+sed -i '' 's#^ZSH_THEME=".*"#ZSH_THEME="powerlevel10k/powerlevel10k"#' ~/.zshrc
 sed -i '' 's/^plugins=(.*)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc
 
-# Configurar NVM e Laravel
+# Configurar NVM
+if ! grep -q "# NVM" ~/.zshrc; then
 cat <<EOF >> ~/.zshrc
+
 # NVM
 export NVM_DIR="$HOME/.nvm"
-    [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" # This loads nvm
-    [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+EOF
+fi
+
+# Configurar Laravel
+if ! grep -q "# Laravel" ~/.zshrc; then
+cat <<EOF >> ~/.zshrc
 
 # Laravel
 export PATH="$HOME/.composer/vendor/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
 EOF
+fi
 
 # Carregar ~/.zshrc
 echo "Carregando ~/.zshrc..."
@@ -130,7 +150,7 @@ curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/dracula/terminal
 # 3. Importa o tema Dracula do caminho fornecido
 osascript <<EOF
 tell application "Terminal"
-    do shell script "open $HOME/terminal-app/Dracula.terminal"
+    do shell script "open $HOME/Dracula.terminal"
     delay 1
     set default settings to settings set "Dracula"
 end tell
