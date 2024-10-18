@@ -10,13 +10,24 @@ install_brew_package() {
   fi
 }
 
-# Função para instalar aplicativos via brew cask
+# Função para instalar aplicativos via brew cask com verificação
 install_cask_package() {
-  if ! brew list --cask "$1" &>/dev/null; then
+  if brew list --cask "$1" &>/dev/null; then
+    echo "$1 já está instalado. Ignorando."
+  elif [ -d "/Applications/$(echo "$1" | sed 's/-/ /g').app" ]; then
+    echo "Parece que já existe uma instalação de $1 em /Applications/$(echo "$1" | sed 's/-/ /g').app."
+    read -p "Deseja remover a versão existente e instalar a versão do brew? (s/n): " resposta
+    if [[ "$resposta" =~ ^[Ss]$ ]]; then
+      echo "Removendo versão existente de $1..."
+      rm -rf "/Applications/$(echo "$1" | sed 's/-/ /g').app"
+      echo "Instalando $1..."
+      brew install --cask "$1"
+    else
+      echo "Ignorando a instalação de $1."
+    fi
+  else
     echo "Instalando $1..."
     brew install --cask "$1"
-  else
-    echo "$1 já está instalado. Ignorando."
   fi
 }
 
@@ -114,7 +125,6 @@ source ~/.zshrc_aliases
 EOF
 fi
 
-
 # Criar e adicionar aliases no .zshrc_aliases
 cat <<'ALIAS' > ~/.zshrc_aliases
 ### Comandos Laravel
@@ -175,8 +185,25 @@ export PATH="/usr/local/sbin:$PATH"
 EOF
 fi
 
-# Carregar ~/.zshrc
-echo "Carregando ~/.zshrc..."
+# Configurar Thema do Terminal
+# 1. Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
+echo "" > ~/.p10k.zsh
+curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
+
+# 2. Baixa o arquivo do tema Dracula para Terminal.app
+curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/Dracula.terminal
+
+# 3. Importa o tema Dracula do caminho fornecido
+osascript <<EOF
+tell application "Terminal"
+    do shell script "open $HOME/Dracula.terminal"
+    delay 1
+    set default settings to settings set "Dracula"
+end tell
+EOF
+
+echo "Configurações aplicadas. O tema Dracula e a fonte MesloLGS NF foram ativados."
+
 
 if [ "$SHELL" != "$(which zsh)" ]; then
   exec zsh -l
@@ -188,44 +215,5 @@ source ~/.zshrc
 echo "Instalando Node.js LTS (Hydrogen)..."
 nvm install lts/hydrogen
 
-# Configurar Thema do Terminal
-# 1. Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
-echo "" > ~/.p10k.zsh
-curl -o ~/.p10k.zsh https://raw.githubusercontent.com/c3t4r4/Personal-MacOS-Modifications/refs/heads/main/p10k.conf
-
-# 2. Baixa o arquivo do tema Dracula para Terminal.app
-curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/dracula/terminal-app/refs/heads/master/Dracula.terminal
-
-# 3. Importa o tema Dracula do caminho fornecido
-osascript <<EOF
-tell application "Terminal"
-    do shell script "open $HOME/terminal-app/Dracula.terminal"
-    delay 1
-    set default settings to settings set "Dracula"
-end tell
-EOF
-
-# Configura a fonte para todos os perfis do Terminal.app
-# Itera sobre os perfis configurados no Terminal
-profiles=$(defaults read com.apple.terminal "Window Settings" | grep -o '"[^"]*"' | tr -d '"')
-
-for profile in $profiles; do
-  # Define a fonte para o perfil atual
-  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontName" -string "MesloLGS NF"
-  defaults write com.apple.terminal "Window Settings" -dict-add "$profile" "FontSize" -int 15
-done
-
-# 5. Define Dracula como o tema padrão para janelas e inicialização
-defaults write com.apple.terminal "Default Window Settings" -string "Dracula"
-defaults write com.apple.terminal "Startup Window Settings" -string "Dracula"
-
-echo "Configurações aplicadas. O tema Dracula e a fonte MesloLGS NF foram ativados."
-
 # Finalização
 echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
-
-if [ "$SHELL" != "$(which zsh)" ]; then
-  exec zsh -l
-fi
-
-source ~/.zshrc
