@@ -43,7 +43,7 @@ cask_apps=(
 
 # Lista de pacotes a instalar via brew
 brew_packages=(
-  curl git php composer nvm yarn fzf atuin dust btop tldr eza
+  curl git php composer nvm yarn fzf atuin dust btop tldr eza zsh
 )
 
 # Instalar aplicativos via cask
@@ -56,14 +56,44 @@ for package in "${brew_packages[@]}"; do
   install_brew_package "$package"
 done
 
-# Instalar Zsh
-brew install zsh
-sudo sh -c 'echo $(which zsh) >> /etc/shells'
-chsh -s $(which zsh)
+# Caminho do Zsh
+ZSH_PATH=$(which zsh)
 
-# Instalar Oh My Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-git clone https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
+# Verifica se o caminho do Zsh já está listado em /etc/shells
+if grep -qF "$ZSH_PATH" /etc/shells; then
+  echo "Zsh já está listado em /etc/shells."
+else
+  echo "Adicionando $ZSH_PATH em /etc/shells..."
+  sudo sh -c "echo $ZSH_PATH >> /etc/shells"
+fi
+
+# Verifica se o Zsh já é o shell padrão do usuário
+if [[ "$SHELL" == "$ZSH_PATH" ]]; then
+  echo "Zsh já é o shell padrão."
+else
+  echo "Definindo Zsh como shell padrão..."
+  chsh -s "$ZSH_PATH"
+fi
+
+# Caminho padrão do Oh My Zsh e do tema Powerlevel10k
+OH_MY_ZSH="$HOME/.oh-my-zsh"
+POWERLEVEL10K="$OH_MY_ZSH/custom/themes/powerlevel10k"
+
+# Verifica se Oh My Zsh já está instalado
+if [ -d "$OH_MY_ZSH" ]; then
+  echo "Oh My Zsh já está instalado."
+else
+  echo "Instalando Oh My Zsh..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+# Verifica se o tema Powerlevel10k já está instalado
+if [ -d "$POWERLEVEL10K" ]; then
+  echo "O tema Powerlevel10k já está instalado."
+else
+  echo "Instalando o tema Powerlevel10k..."
+  git clone https://github.com/romkatv/powerlevel10k.git $POWERLEVEL10K
+fi
 
 # Adicionar configurações adicionais ao .zshrc
 if ! grep -q "# Fontes Powerlevel10k e configurações" ~/.zshrc; then
@@ -95,13 +125,31 @@ alias runtest='sail artisan test'
 alias upd='brew update && brew upgrade'
 ALIAS
 
-# Instalar fontes necessárias
-brew tap homebrew/cask-fonts
-brew install --cask font-meslo-lg-nerd-font
-
 # Instalar plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+
+# Caminho padrão do zsh-autosuggestions
+ZSH_AUTOSUGGESTIONS="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+
+# Verifica se zsh-autosuggestions já está instalado
+if [ -d "$ZSH_AUTOSUGGESTIONS" ]; then
+  echo "zsh-autosuggestions já está instalado."
+else
+  echo "Instalando zsh-autosuggestions..."
+  git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+fi
+
+# Caminho padrão do zsh-syntax-highlighting
+ZSH_HIGHLIGHTING="$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+
+# Verifica se zsh-syntax-highlighting já está instalado
+if [ -d "$ZSH_AUTOSUGGESTIONS" ]; then
+  echo "zsh-syntax-highlighting já está instalado."
+else
+  echo "Instalando zsh-syntax-highlighting..."
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+fi
 
 # Substituir ZSH_THEME e plugins no .zshrc
 echo "Configurando tema e plugins no .zshrc..."
@@ -133,7 +181,6 @@ fi
 echo "Carregando ~/.zshrc..."
 source ~/.zshrc
 
-
 # Instalar a versão LTS do Node.js
 echo "Instalando Node.js LTS (Hydrogen)..."
 nvm install lts/hydrogen
@@ -150,7 +197,7 @@ curl -L -o ~/Dracula.terminal https://raw.githubusercontent.com/dracula/terminal
 # 3. Importa o tema Dracula do caminho fornecido
 osascript <<EOF
 tell application "Terminal"
-    do shell script "open $HOME/Dracula.terminal"
+    do shell script "open $HOME/terminal-app/Dracula.terminal"
     delay 1
     set default settings to settings set "Dracula"
 end tell
