@@ -132,7 +132,7 @@ alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 alias pest='[ -f pest ] && sh pest || sh vendor/bin/pest'
 alias runsail='sail up -d && sail npm run watch'
 alias runtest='sail artisan test'
-alias upd='brew update && brew upgrade'
+alias upd='omz update && brew update && brew upgrade'
 ALIAS
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
