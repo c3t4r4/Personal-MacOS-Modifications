@@ -137,7 +137,7 @@ alias runsail='sail up -d && sail npm run watch'
 alias runtest='sail artisan test'
 
 ### Gerador de Senha
-alias gerarsenha='read -p "Digite o tamanho da senha: " tamanho; openssl rand -base64 $tamanho | tr -d "\n"; echo'
+alias gerarsenha='echo -n "Digite o tamanho da senha: "; read tamanho; openssl rand -base64 $tamanho | tr -d "\n"; echo'
 
 ALIAS
 
