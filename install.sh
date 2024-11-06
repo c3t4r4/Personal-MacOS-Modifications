@@ -127,12 +127,18 @@ fi
 
 # Criar e adicionar aliases no .zshrc_aliases
 cat <<'ALIAS' > ~/.zshrc_aliases
+### Comandos
+alias upd='omz update && brew update && brew upgrade'
+
 ### Comandos Laravel
 alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 alias pest='[ -f pest ] && sh pest || sh vendor/bin/pest'
 alias runsail='sail up -d && sail npm run watch'
 alias runtest='sail artisan test'
-alias upd='omz update && brew update && brew upgrade'
+
+### Gerador de Senha
+alias gerarsenha='read -p "Digite o tamanho da senha: " tamanho; openssl rand -base64 $tamanho | tr -d "\n"; echo'
+
 ALIAS
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
