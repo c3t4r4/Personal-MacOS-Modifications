@@ -186,8 +186,7 @@ if ! grep -q "# Laravel" ~/.zshrc; then
 cat <<EOF >> ~/.zshrc
 
 # Laravel
-export PATH="$HOME/.composer/vendor/bin:$PATH"
-export PATH="/usr/local/sbin:$PATH"
+export PATH="$PATH:$HOME/.composer/vendor/bin"
 EOF
 fi
 
