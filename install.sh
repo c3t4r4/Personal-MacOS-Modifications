@@ -158,7 +158,7 @@ fi
 ZSH_HIGHLIGHTING="$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 
 # Verifica se zsh-syntax-highlighting já está instalado
-if [ -d "$ZSH_AUTOSUGGESTIONS" ]; then
+if [ -d "$ZSH_HIGHLIGHTING" ]; then
   echo "zsh-syntax-highlighting já está instalado."
 else
   echo "Instalando zsh-syntax-highlighting..."
