@@ -232,6 +232,7 @@ cat <<EOF >> ~/.zshrc
 
 # Laravel
 export PATH="$PATH:$HOME/.composer/vendor/bin"
+export PATH="/usr/local/sbin:$PATH"
 EOF
 fi
 
