@@ -47,14 +47,14 @@ mkdir ~/.nvm
 # Lista de aplicativos a instalar via cask
 cask_apps=(
   google-chrome element sublime-text dbeaver-community insomnia anydesk spotify
-  angry-ip-scanner teamviewer qbittorrent vlc alt-tab shottr whatsapp
-  visual-studio-code docker istat-menus jetbrains-toolbox google-drive onedrive
-  font-fira-code calibre ollama brave-browser font-meslo-for-powerlevel10k
+  angry-ip-scanner teamviewer qbittorrent vlc alt-tab shottr cursor basictex 
+  visual-studio-code docker istat-menus jetbrains-toolbox google-drive onedrive 
+  brave-browser font-powerline-symbols font-meslo-for-powerlevel10k
 )
 
 # Lista de pacotes a instalar via brew
 brew_packages=(
-  curl git php composer nvm yarn fzf atuin dust btop tldr eza zsh
+  wget curl git php php@8.1 composer nvm yarn fzf atuin dust btop tldr eza zsh mas mtr ncdu docker-compose docker-machine
 )
 
 # Instalar aplicativos via cask
@@ -127,17 +127,62 @@ fi
 
 # Criar e adicionar aliases no .zshrc_aliases
 cat <<'ALIAS' > ~/.zshrc_aliases
-### Comandos
-alias upd='omz update && brew update && brew upgrade'
+### Gerador de Senha
+alias gerarsenha='echo -n "Digite o tamanho da senha: "; read tamanho; echo -n "Incluir caracteres especiais? (s/n): "; read especiais; if [ "$especiais" = "s" ]; then LC_ALL=C tr -dc "a-zA-Z0-9@!#$%^&*()_+" < /dev/urandom | fold -w1 | head -n $tamanho | perl -MList::Util=shuffle -e "print shuffle(<>);" | tr -d "\n"; else LC_ALL=C tr -dc "a-zA-Z0-9" < /dev/urandom | fold -w1 | head -n $tamanho | perl -MList::Util=shuffle -e "print shuffle(<>);" | tr -d "\n"; fi; echo'
+
+alias gerarsenhafast='LC_ALL=C tr -dc "a-zA-Z0-9" < /dev/urandom | fold -w1 | head -n 64 | perl -MList::Util=shuffle -e "print shuffle(<>);" | tr -d "\n";'
+
+### Ative Node
+alias activenode='nvm alias default lts/* && nvm use default'
 
 ### Comandos Laravel
 alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
+
 alias pest='[ -f pest ] && sh pest || sh vendor/bin/pest'
+
 alias runsail='sail up -d && sail npm run watch'
+
 alias runtest='sail artisan test'
 
-### Gerador de Senha
-alias gerarsenha='echo -n "Digite o tamanho da senha: "; read tamanho; openssl rand -base64 $tamanho | tr -d "\n"; echo'
+# Primeiro, crie uma função para limpar as versões antigas do NVM
+clean_nvm_versions() {
+	echo "Limpando versões antigas do NVM..."
+	local current=$(nvm current | sed 's/v//')
+
+	# Usar grep mais específico para capturar apenas versões numéricas
+	for version in $(nvm ls --no-colors | grep -o "v[0-9]\+\.[0-9]\+\.[0-9]\+" | sed 's/v//'); do
+		# Não remover a versão atual
+		if [ "$version" != "$current" ]; then
+			nvm uninstall "$version" > /dev/null 2>&1
+		fi
+	done
+}
+
+### Sistema
+alias upd='echo "Atualizando Oh My Zsh..." && \
+omz update > /dev/null 2>&1 && \
+echo "Atualizando brew e pacotes globais..." && \
+brew update > /dev/null 2>&1 && \
+brew upgrade > /dev/null 2>&1 && \
+brew cleanup && \
+echo "Atualizando composer e pacotes globais..." && \
+composer self-update > /dev/null 2>&1 && \
+composer global update > /dev/null 2>&1 && \
+echo "Atualizando NodeJS LTS..." && \
+nvm install --lts > /dev/null 2>&1 && \
+nvm use --lts > /dev/null 2>&1 && \
+echo "Atualizando Pacotes npm Global..." && \
+npm update -g > /dev/null 2>&1 && \
+clean_nvm_versions && \
+nvm cache clear > /dev/null 2>&1 && \
+echo "Atualizando python3 pip e pacotes globais..." && \
+python3 -m pip install --upgrade pip > /dev/null 2>&1 && \
+pip3 list --outdated --format=columns | tail -n +3 | awk "{print \$1}" | xargs -n1 pip3 install -U > /dev/null 2>&1 && \
+echo "Atualizando tldr..." && \
+tldr --update > /dev/null 2>&1 && \
+echo "Verificando atualizações da Apple Store..." && \
+softwareupdate -l > /dev/null 2>&1 && \
+mas upgrade'
 
 ALIAS
 
@@ -190,10 +235,6 @@ export PATH="$PATH:$HOME/.composer/vendor/bin"
 EOF
 fi
 
-# Instalar a versão LTS do Node.js
-echo "Instalando Node.js LTS (Hydrogen)..."
-nvm install lts/hydrogen
-
 # Configurar Thema do Terminal
 # 1. Baixa o conteúdo e salva no arquivo ~/.p10k.zsh
 echo "" > ~/.p10k.zsh
@@ -222,3 +263,7 @@ rm -rf "$HOME/Dracula.terminal"
 
 # Finalização
 echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
+
+echo "Recarregando e Atualizando"
+source ~/.zshrc_aliases
+upd
