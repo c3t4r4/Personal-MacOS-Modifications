@@ -46,15 +46,14 @@ mkdir ~/.nvm
 
 # Lista de aplicativos a instalar via cask
 cask_apps=(
-  google-chrome element sublime-text dbeaver-community insomnia anydesk spotify
-  angry-ip-scanner teamviewer qbittorrent vlc alt-tab shottr cursor basictex 
-  visual-studio-code docker istat-menus jetbrains-toolbox google-drive onedrive 
-  brave-browser font-powerline-symbols font-meslo-for-powerlevel10k
+  alt-tab angry-ip-scanner anydesk basictex brave-browser cursor dbeaver-community element font-powerline-symbols 
+  font-meslo-for-powerlevel10k google-chrome google-drive insomnia istat-menus jetbrains-toolbox ollama onedrive 
+  orbstack qbittorrent rustdesk shottr spotify sublime-text teamviewer visual-studio-code vlc whimsical windows-app			
 )
 
 # Lista de pacotes a instalar via brew
 brew_packages=(
-  wget curl git php php@8.1 composer nvm yarn fzf atuin dust btop tldr eza zsh mas mtr ncdu docker-compose docker-machine
+  atuin btop composer curl docker-compose docker-machine dust eza ffmpeg fzf gd go git nvm tldr mas mtr uv ncdu php php@8.1 zsh wget yarn
 )
 
 # Instalar aplicativos via cask
@@ -183,6 +182,19 @@ tldr --update > /dev/null 2>&1 && \
 echo "Verificando atualizações da Apple Store..." && \
 softwareupdate -l > /dev/null 2>&1 && \
 mas upgrade'
+
+### Backups LidTec
+alias criarBKLidTec='ssh root@server.lidtec.com.br "cd /root && ./backupDocker.sh;"'
+
+alias copiarBKLidTec='scp "root@server.lidtec.com.br:/root/*.enc" /Users/c3t4r4/Cloud-Drive/Trabalho/BackupPortainer/ && rsync -av --ignore-existing /Users/c3t4r4/Cloud-Drive/Trabalho/BackupPortainer/ /Volumes/SDD/BackupPortainer/'
+
+alias excluirBKLidTec='ssh root@server.lidtec.com.br "find /root/ -name \"*.zip.enc\" -type f -exec rm {} \;"'
+
+alias bkLidTec='criarBKLidTec && copiarBKLidTec && excluirBKLidTec'
+
+alias rsync='/usr/local/bin/rsync'
+
+alias webui='docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main'
 
 ALIAS
 
