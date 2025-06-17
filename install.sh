@@ -53,7 +53,7 @@ cask_apps=(
 
 # Lista de pacotes a instalar via brew
 brew_packages=(
-  atuin btop composer curl docker-compose docker-machine dust eza ffmpeg fzf gd go git nvm tldr mas mtr uv ncdu php php@8.1 zsh wget yarn
+  atuin btop composer curl docker-compose docker-machine dust eza ffmpeg fzf gd go git mas magic-wormhole mtr nvm tldr uv ncdu php zsh wget yarn
 )
 
 # Instalar aplicativos via cask
@@ -160,6 +160,7 @@ clean_nvm_versions() {
 ### Sistema
 alias upd='echo "Atualizando Oh My Zsh..." && \
 omz update > /dev/null 2>&1 && \
+source ~/.zshrc && \
 echo "Atualizando brew e pacotes globais..." && \
 brew update > /dev/null 2>&1 && \
 brew upgrade > /dev/null 2>&1 && \
@@ -232,9 +233,12 @@ if ! grep -q "# NVM" ~/.zshrc; then
 cat <<EOF >> ~/.zshrc
 
 # NVM
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # Esto é para carregar o nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Isto é para a auto-complete do nvm
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+nvm use --lts > /dev/null 2>&1
+
 EOF
 fi
 
@@ -278,5 +282,30 @@ rm -rf "$HOME/Dracula.terminal"
 echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
 
 echo "Recarregando e Atualizando"
-source ~/.zshrc_aliases
+source ~/.zshrc
+
+#Instalar o NVM
+nvm install --lts
+
+#Ativar o NVM
+nvm use --lts
+
+#Ativar o Composer
+composer self-update
+
+#Instalar o Laravel Installer
+composer global require laravel/installer
+
+#Atualizar o Composer Global
+composer global update
+
+#Atualizar o Oh My Zsh
+omz update
+
+#Atualizar o Homebrew
+brew update
+
+#Atualizar o Homebrew
+brew upgrade
+
 upd
