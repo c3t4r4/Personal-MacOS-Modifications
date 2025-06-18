@@ -47,13 +47,13 @@ mkdir ~/.nvm
 # Lista de aplicativos a instalar via cask
 cask_apps=(
   alt-tab angry-ip-scanner anydesk basictex brave-browser cursor dbeaver-community element font-powerline-symbols 
-  font-meslo-for-powerlevel10k google-chrome google-drive insomnia istat-menus jetbrains-toolbox ollama onedrive 
+  font-meslo-for-powerlevel10k google-chrome google-drive insomnia istat-menus jetbrains-toolbox notion obsidian onedrive 
   orbstack qbittorrent rustdesk shottr spotify sublime-text teamviewer visual-studio-code vlc whimsical windows-app			
 )
 
 # Lista de pacotes a instalar via brew
 brew_packages=(
-  atuin btop composer curl docker-compose docker-machine dust eza ffmpeg fzf gd go git mas magic-wormhole mtr nvm tldr uv ncdu php zsh wget yarn
+  atuin btop composer curl docker-compose docker-machine dust eza ffmpeg fzf gd go git mas magic-wormhole mtr nvm tldr uv ncdu php rsync zsh wget yarn
 )
 
 # Instalar aplicativos via cask
@@ -193,8 +193,6 @@ alias excluirBKLidTec='ssh root@server.lidtec.com.br "find /root/ -name \"*.zip.
 
 alias bkLidTec='criarBKLidTec && copiarBKLidTec && excluirBKLidTec'
 
-alias rsync='/usr/local/bin/rsync'
-
 alias webui='docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main'
 
 ALIAS
@@ -247,8 +245,7 @@ if ! grep -q "# Laravel" ~/.zshrc; then
 cat <<EOF >> ~/.zshrc
 
 # Laravel
-export PATH="$PATH:$HOME/.composer/vendor/bin"
-export PATH="/usr/local/sbin:$PATH"
+export PATH="$PATH:$HOME/.composer/vendor/bin:/usr/local/sbin"
 EOF
 fi
 
