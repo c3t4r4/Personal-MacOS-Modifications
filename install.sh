@@ -281,6 +281,9 @@ echo "Instalação concluída. para reconfigurar o p10k use: pk10 configure"
 echo "Recarregando e Atualizando"
 source ~/.zshrc
 
+#Instalar o Uninstall App
+mv uninstall_app.sh /usr/local/bin/uninstall_app
+
 #Instalar o NVM
 nvm install --lts
 
